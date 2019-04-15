@@ -1,27 +1,76 @@
-# AngularProject
+## 基本语法
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.8.
+#### 绑定样式
+[class.selected]="item.name === selectName"
 
-## Development server
+#### ngFor循环
+```
+  *ngFor="let item of hero; index as i"
+```
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+#### 组件化的引入
+```
+  //父组件的ts引入
+  import { Component, OnInit, Input } from '@angular/core';
+  @Input() hero: Hero;
+  <app-hero-detail [hero]="selectName"></app-hero-detail>
 
-## Code scaffolding
+  //父组件的html引入
+  <app-组件名字></app-组件名字>
+```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+#### ngModel、[ngModel]和[(ngModel)]的写法（https://blog.csdn.net/chelen_jak/article/details/81454166）
+* ngModel
+	+  此时需要注意的是，单独使用ngModel时，如果没有为ngModel赋值的话，则必须存在name属性。
 
-## Build
+	+ 也就是说，单独ngModel的作用是通知ngForm.value，我要向你那里加入一个property，其key值是组件的name属性值，其value为空字符串。
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
-## Running unit tests
+* [ngModel]（单向绑定，输入框的值改变不影响表单的值，但是提交表单的时候又能体现值在）
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+* [(ngModel)]（双向绑定，）
 
-## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 
-## Further help
+## 服务
+```
+hero.service.ts:
+  import { Observable, of } from 'rxjs';
+  import {HEROES} './mock-heroes.ts'
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+  getHeroes(): Observable<Hero[]> {
+    return of(HEROES);
+  }
+
+hero.component.ts:
+  异步获取:( Observable.subscribe() 是关键的差异点。)
+  getHeroes(): void {
+    this.heroService.getHeroes()
+        .subscribe(heroes => this.heroes = heroes);
+  }
+
+```
+
+
+## 路由
+```
+import { Router} from '@angular/router';
+constructor(private router: Router) { }
+
+html路由跳转:
+  <a *ngFor="let hero of heroes" class="col-1-4"
+      routerLink="/detail/{{hero.id}}">
+    <div class="module hero">
+      <h4>{{hero.name}}</h4>
+    </div>
+  </a>
+
+js路由跳转:
+this.router.navigateByUrl(`home?id=1`);
+
+获取参数:
+this.route.snapshot.paramMap.get('id')
+```
+
+
+##HTTP
